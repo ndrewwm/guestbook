@@ -1,64 +1,91 @@
-library(tibble)
-library(lubridate)
 library(shiny)
-# library(fullcalendar)
-library(htmlwidgets)
-library(shinyalert)
+library(lubridate)
+library(calendR)
+library(tibble)
 
-# this will get read in
-# should filter to current month (stays that overlap with current month)
-stays <- tibble(
-    title = "Andrew & Jenny",
-    start = today(),
-    end   = today() + days(3)
-)
+source("utils.R")
 
 ui <- navbarPage(
-    title = "Cabin Guestbook",
-
-    tabPanel(
-        title = "Calendar",
-        # fullcalendarOutput("calendar", width = "60%", height = "50%"),
-
-        h4("Plan new stay:"),
-        dateInput("start", "Begin", value = today()),
-        dateInput("end", "End", value = today() + days(1)),
-        actionButton("save", "Save")
+  "Guestbook",
+  tabPanel(
+    title = "Calendar",
+    fluidRow(
+      column(
+        width = 3,
+        selectInput("cal_yr", label = "Year", choices = 2022:2032)
+      ),
+      column(
+        width = 3,
+        selectInput("cal_mon", label = "Month", choices = month.name[4:8])
+      )
     ),
-
-    tabPanel("Cabin Needs?"),
-    tabPanel("Chores Checklist")
+    plotOutput("cal")
+  ),
+  tabPanel(
+    title = "Reserve",
+    dataTableOutput("tab"),
+    dataTableOutput("proposed"),
+    fluidRow(
+      column(
+        width = 3,
+        selectInput("res_who", "Who", choices = sort(c("Amanda", "Andrew", "Bennet", "Dan", "Dorothy", "Emily", "Jeff", "Josh", "Larry", "Mike", "Tyler")))
+      ),
+      column(
+        width = 3,
+        dateInput("res_start", "Start", value = today())
+      ),
+      column(
+        width = 3,
+        dateInput("res_end", "End", value = today() + 1)
+      ),
+      column(
+        width = 3,
+        actionButton("book", "Go")
+      )
+    ),
+  ),
+  navbarMenu(
+    "More",
+    tabPanel("Sub-Component A"),
+    tabPanel("Sub-Component B")
+  )
 )
 
 server <- function(input, output) {
-    observeEvent(input$save, {
-        proposed <- interval(input$start, input$end)
-        existing <- map2(stays$start, stays$end, interval)
-        overlaps <- any(map2_lgl(proposed, existing, int_overlaps))
+  trip <- eventReactive(input$go, {
+    tibble(who = input$res_who, start = input$res_start, end = input$res_end)
+  })
 
-        false_start <- input$start < today()
+  output$proposed <- renderDataTable(trip())
 
-        # days must be in the future
-        if (false_start) {
-            message("invalid start time")
-        }
+  output$cal <- renderPlot({
+    m <- switch(
+      input$cal_mon,
+      "April"  = 4,
+      "May"    = 5,
+      "June"   = 6,
+      "July"   = 7,
+      "August" = 8
+    )
 
-        # trips shouldn't overlap?
-        if (overlaps) {
+    s <- stays %>%
+      unnest_stays() %>%
+      filter(month(dt) == m)
 
-        }
+    if (nrow(s) > 0) {
+      my_calndr(input$cal_yr, m, text = s$who, text.pos = day(s$dt))
+    } else {
+      my_calndr(input$cal_yr, m)
+    }
+  })
 
-        # if all is okay, then add the proposed trip
-        # needs to make stays reactive?
-        if (!false_start & !overlaps) {
-            stays <- bind_rows(stays, tibble(title = "hm", start = input$start, end = input$end))
-        }
-    })
-
-    # output$calendar <- renderFullcalendar({
-        # fullcalendar(stays)
-    # })
+  output$tab <- renderDataTable(stays)
 }
 
-# Run the application
-shinyApp(ui = ui, server = server)
+shinyApp(ui, server, onStart = function() {
+  cat("Starting up...\n")
+
+  onStop(function() {
+    cat("Shutting down...\n")
+  })
+})

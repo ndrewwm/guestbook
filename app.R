@@ -1,12 +1,10 @@
 library(shiny)
-library(lubridate)
-library(calendR)
-library(tibble)
 
 source("utils.R")
 
 ui <- navbarPage(
   "Guestbook",
+
   tabPanel(
     title = "Calendar",
     fluidRow(
@@ -21,6 +19,7 @@ ui <- navbarPage(
     ),
     plotOutput("cal")
   ),
+
   tabPanel(
     title = "Reserve",
     dataTableOutput("tab"),
@@ -44,6 +43,7 @@ ui <- navbarPage(
       )
     ),
   ),
+
   navbarMenu(
     "More",
     tabPanel("Sub-Component A"),

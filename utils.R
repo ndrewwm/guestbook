@@ -1,3 +1,7 @@
+library(tidyverse)
+library(lubridate)
+library(calendR)
+
 stays <- read_csv("data/stays.csv", col_types = "cDD")
 
 unnest_stays <- function(stays) {

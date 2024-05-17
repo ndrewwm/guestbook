@@ -2,36 +2,27 @@
   export let form;
 </script>
 
-<html lang="en" class="all">
-  <div class="parent">
-    <div class="child">
-      <form method="post" action="?/login">
-        {#if form?.missing}
-        <p class="error">Email and password required.</p>
-        {/if}
-        {#if form?.incorrect}
-        <p class="error">Invalid credentials!</p>
-        {/if}
-        <label for="email">Email</label>
-        <input name="email" type="email" value={form?.email ?? ""} />
-        <br />
-        <label for="password">Password</label>
-        <input type="password" name="password" />
-        <br />
-        <button>Log in</button>
-      </form>
-    </div>
+<div class="parent">
+  <div class="child">
+    <form method="post" action="?/login">
+      {#if form?.missing}
+      <p class="error">Email and password required.</p>
+      {/if}
+      {#if form?.incorrect}
+      <p class="error">Invalid credentials!</p>
+      {/if}
+      <label for="email">Email</label>
+      <input name="email" type="email" value={form?.email ?? ""} />
+      <br />
+      <label for="password">Password</label>
+      <input type="password" name="password" />
+      <br />
+      <button>Log in</button>
+    </form>
   </div>
-</html>
+</div>
   
 <style>
-  .all {
-    width: 100vw;
-    height: 100vh;
-    background-image: url("../../lib/images/lake_fog.jpg");
-    background-size: 1600px;
-  }
-
   .parent {
     height: 300px;
     display: flex;
@@ -46,16 +37,18 @@
     border-radius: 20px;
     border-width: 1px;
     padding: 20px;
-    background-color: lightblue;
     opacity: 80%;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    border-radius: 16px;
   }
 
   label {
     font-weight: bold;
     display: inline-block;
-    /* float: left; */
     text-align: left;
     width: 65px;
+    margin-right: 15px;
   }
 
   input {
@@ -66,7 +59,6 @@
   }
 
   button {
-    /* border-radius: 7px; */
     margin-top: 7px;
     border-width: 1px;
   }

@@ -1,0 +1,20 @@
+html {
+  background-image: url("../lib/images/lake_fog.jpg");
+  /* background-size: cover; */
+  background-size: 1500px;
+  background-repeat: no-repeat;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Media queries need to come after initial styling */
+@media screen and (max-width: 500px) {
+  html {
+    background-size: 1700px;
+  }
+}
+
+@media screen and (min-width: 1700px) {
+  html {
+    background-size: 2000px;
+  }
+}

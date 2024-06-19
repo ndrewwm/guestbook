@@ -9,14 +9,7 @@ export async function GET({ url }) {
   const user_id = url.searchParams.get("user_id");
 
   let data = await db
-    .select({
-      name: eventsTable.name,
-      sdt: eventsTable.sdt,
-      edt: eventsTable.edt,
-      color: eventsTable.color,
-      approved: eventsTable.approved,
-      user_id: eventsTable.user_id,
-    })
+    .select()
     .from(eventsTable)
     .where(
       and(

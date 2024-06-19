@@ -10,8 +10,13 @@ export async function load({ cookies, fetch }) {
   }
   const user = await verifyAuthJWT(token);
 
-  const data = await fetch(`/api/calendar`);
-  let events = await data.json();
+  const data_approved = await fetch(`/api/calendar?approved=1`);
+  const approved = await data_approved.json();
+
+  const data_unapproved = await fetch(`/api/calendar?approved=0&user_id=${user.id}`);
+  const unapproved = await data_unapproved.json();
+
+  const events = approved.concat(unapproved);
   return { events: JSON.stringify(events) };
 }
 

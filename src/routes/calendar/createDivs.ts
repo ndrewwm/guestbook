@@ -2,10 +2,11 @@ import { error } from "@sveltejs/kit";
 import { djs as dayjs } from "$lib/util/dayjs";
 
 export type CalItem = {
-  type: "date" | "event",
+  type: "date" | "event" | "unapproved";
   name: string;
   sdt: dayjs.Dayjs | string;
   edt: dayjs.Dayjs | string;
+  approved?: number | undefined;
   in_month?: boolean | undefined;
   color?: string | undefined;
   duration?: number | undefined,
@@ -63,7 +64,7 @@ function createDays(year: string, month: string) {
 
 export function prepareEvents(events: CalItem[]) {
   for (let event of events) {
-    event.type = "event";
+    event.type = event.approved === 1 ? "event" : "unapproved";
     event.sdt = dayjs(event.sdt);
     event.b_sdt = event.sdt;
     event.edt = dayjs(event.edt);
@@ -132,7 +133,7 @@ export function createDivs(year: string, month: string, events: CalItem[]) {
       day += 1;
     }
 
-    if (item.type === "event") {
+    if (item.type !== "date") {
       row_evt += 1;
       item.row_start = row_evt;
       item.row_end = row_evt;

@@ -9,6 +9,24 @@
   events = prepareEvents(events);
   let items = createDivs(year, month, events);
   let rows = items.map((item) => item.row_start).at(-1);
+
+  function provideStyle(item: CalItem) {
+    if (item.type === "date") {
+      return item.grid_area;
+    }
+
+    let style = item.grid_area;
+    if (item.type === "event") {
+      style += `${item.grid_area} background: ${item.color};`;
+    } else {
+      style += `
+        ${item.grid_area}
+        background: repeating-linear-gradient(-45deg, ${item.color}, black 10%);
+        color: white;
+      `;
+    }
+    return style;
+  }
 </script>
 
 <div class="calendar" style="grid-template-rows: repeat({rows + 1}, 0.4fr);">
@@ -28,9 +46,11 @@
 
   {#each items as item}
     {#if item.type === "date"}
-      <div class="date" style="{item.grid_area}">{item.name}</div>
+      <div class="date" style="{provideStyle(item)}">{item.name}</div>
     {:else}
-      <div class="event" style="{item.grid_area} background: {item.color}">{item.name}</div>
+      <div class="{item.type}" style="{provideStyle(item)}">
+        {item.name}{item.approved === 1 ? "" : " (requested)"}
+      </div>
     {/if}
   {/each}
 </div>
@@ -59,7 +79,8 @@
     border-radius: 16px;
   }
 
-  .calendar > .event {
+  .calendar > .event,
+  .calendar > .unapproved {
     margin-left: 2px;
     margin-right: 2px;
     padding: 8px;

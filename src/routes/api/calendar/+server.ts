@@ -1,6 +1,6 @@
 import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/database/db.js";
-import { eq, and, or } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { createEvent } from "$lib/server/database/crudEvent.js";
 import { eventsTable } from "$lib/server/database/schema.js";
 

@@ -1,7 +1,12 @@
-import { fail } from '@sveltejs/kit';
+import { redirect, fail } from '@sveltejs/kit';
 import { djs as dayjs } from '$lib/util/dayjs.js';
 
-export async function load({ fetch }) {
+export async function load({ cookies, fetch }) {
+  const token = cookies.get("auth_token");
+  if (!token) {
+    throw redirect(301, "/login");
+  }
+
   const data = await fetch(`/api/calendar`);
   let events = await data.json();
   return { events: JSON.stringify(events) };

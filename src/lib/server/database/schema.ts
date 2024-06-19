@@ -5,6 +5,7 @@ export const usersTable = sqliteTable('users', {
   name: text('name').notNull(),
   email: text('email').unique().notNull(),
   password: text('password').notNull(),
+  color: text('color').notNull().default('blue'),
 });
 
 // export type InsertUser = typeof usersTable.$inferInsert;

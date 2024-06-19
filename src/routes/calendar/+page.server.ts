@@ -1,6 +1,7 @@
-import { redirect, fail } from '@sveltejs/kit';
-import { djs as dayjs } from '$lib/util/dayjs.js';
+import { redirect } from '@sveltejs/kit';
 import { verifyAuthJWT } from '$lib/server/jwt.js';
+import { getUser } from '$lib/server/database/getUser.js';
+import { createEvent } from '$lib/server/database/crudEvent.js';
 
 export async function load({ cookies, fetch }) {
   const token = cookies.get("auth_token");
@@ -8,7 +9,6 @@ export async function load({ cookies, fetch }) {
     throw redirect(301, "/login");
   }
   const user = await verifyAuthJWT(token);
-  console.log(user);
 
   const data = await fetch(`/api/calendar`);
   let events = await data.json();
@@ -20,13 +20,18 @@ export const actions = {
     const data = await request.formData();
     const sdt = data.get('start');
     const edt = data.get('end');
+    const payload = await verifyAuthJWT(cookies.get("auth_token"));
+    const user = await getUser(payload.id, undefined);
+    const event = {
+      user_id: user.user_id,
+      name: user.name,
+      color: user.color,
+      approved: 0,
+      sdt,
+      edt,
+    };
 
-    if (dayjs(sdt) > dayjs(edt)) {
-      return fail(400, { sdt, edt, success: false, invalid: true });
-    }
-
-    console.log(cookies.get("auth_token"));
-
-    return { success: true }
+    const resp = await createEvent(event);
+    return { success: true, event_id: resp.id };
   }
 }

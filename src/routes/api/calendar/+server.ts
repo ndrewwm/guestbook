@@ -7,6 +7,7 @@ import { eventsTable } from "$lib/server/database/schema.js";
 export async function GET({ url }) {
   const approved = url.searchParams.get("approved");
   const user_id = url.searchParams.get("user_id");
+  const name = url.searchParams.get("name");
 
   let data = await db
     .select()
@@ -15,6 +16,7 @@ export async function GET({ url }) {
       and(
         approved ? eq(eventsTable.approved, approved) : undefined,
         user_id ? eq(eventsTable.user_id, user_id) : undefined,
+        name ? eq(eventsTable.name, name) : undefined,
       )
     );
 

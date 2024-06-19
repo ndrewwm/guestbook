@@ -45,15 +45,15 @@
     <button on:click={toggleRequestForm}>Request</button>
   {:else}
     <form class="request" method="POST" action="?/request">
-      <label for="start">Start:
+      <label for="start">From:
         <input type="date" id="start" name="start" min={today.format("YYYY-MM-DD")} required>
       </label>
       
-      <label for="end">End:
+      <label for="end">To:
         <input type="date" id="end" name="end" min={today.format("YYYY-MM-DD")} required>
       </label>
-      <input type="submit" on:click={handleSubmit}>
-      <button on:click={toggleRequestForm}>Cancel</button>
+      <input class="submit" type="submit" on:click={handleSubmit} value="✅">
+      <button on:click={toggleRequestForm}>❎</button>
     </form>
   {/if}
 </div>
@@ -81,5 +81,11 @@
 
   label {
     font-weight: bold;
+  }
+
+  .submit, form > button {
+    border-radius: 8px;
+    border-width: 1px;
+    border-color: gray;
   }
 </style>

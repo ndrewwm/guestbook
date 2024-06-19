@@ -1,17 +1,29 @@
 import { json } from "@sveltejs/kit";
-import { createEvent } from "$lib/server/database/crudEvent.js";
 import { db } from "$lib/server/database/db.js";
+import { eq, and, or } from "drizzle-orm";
+import { createEvent } from "$lib/server/database/crudEvent.js";
 import { eventsTable } from "$lib/server/database/schema.js";
 
-export async function GET() {
+export async function GET({ url }) {
+  const approved = url.searchParams.get("approved");
+  const user_id = url.searchParams.get("user_id");
+
   let data = await db
     .select({
       name: eventsTable.name,
       sdt: eventsTable.sdt,
       edt: eventsTable.edt,
       color: eventsTable.color,
+      approved: eventsTable.approved,
+      user_id: eventsTable.user_id,
     })
-    .from(eventsTable);
+    .from(eventsTable)
+    .where(
+      and(
+        approved ? eq(eventsTable.approved, approved) : undefined,
+        user_id ? eq(eventsTable.user_id, user_id) : undefined,
+      )
+    );
 
   return json(data);
 }
@@ -19,7 +31,6 @@ export async function GET() {
 
 export async function POST({ request }) {
   let data = await request.json();
-  console.log(data);
   let event = await createEvent(data);
   return json({ message: "Event created." }, { status: 201 });
 }

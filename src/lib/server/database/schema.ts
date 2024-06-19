@@ -18,6 +18,7 @@ export const eventsTable = sqliteTable("events", {
   sdt: text('sdt').notNull(),
   edt: text('edt').notNull(),
   color: text('color').notNull(),
+  approved: integer('approved').notNull().default(0),
 });
 
 export type InsertEvent = typeof eventsTable.$inferInsert;
